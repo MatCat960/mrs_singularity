@@ -1,6 +1,9 @@
 Bootstrap: localimage
 From: ../../images/mrs_uav_system.sif
 
+%setup
+  echo "$SSH_KEY" > /tmp/ssh_key
+
 %post
 
     ### USER INSTALL PART START
@@ -23,12 +26,40 @@ From: ../../images/mrs_uav_system.sif
     sudo apt-get -y install apt-transport-https
     echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
     sudo apt-get -y update
-    sudo apt-get -y install sublime-text
+    sudo apt-get -y install sublime-text libsfml-dev
+
+    # uvdar
+    apt install -y ros-noetic-uvdar-core
+    apt install -y ros-noetic-uvdar-gazebo-plugin
+
+    # Get ssh credentials from host
+    # export SSH_AUTH_SOCK={{ SSH_AUTH_SOCK }}
+    mkdir ~/.ssh
+    mv /tmp/ssh_key ~/.ssh/id_rsa
+    chmod 600 ~/.ssh/id_rsa
+    echo "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_rsa" > ~/.ssh/config
+
+    # install osqp
+    git clone git@github.com:MatCat960/my_osqp.git ~/osqp
+    cd ~/osqp && mkdir build && cd build
+    cmake -G "Unix Makefiles" ..
+    cmake --build . --target install
+
+    # Remove git credentials
+    rm -f ~/.ssh/id_rsa
+
+    # install and build osqp-eigen
+    git clone https://github.com/robotology/osqp-eigen.git /opt/osqp-eigen
+    cd /opt/osqp-eigen && mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/opt/osqp-eigen ../
+    make
+    make install
+    # echo "export OsqpEigen_DIR=/root/osqp-eigen" > ~/.bashrc
 
     ### USER INSTALL PART END
 
 %environment
     export LC_ALL=C
+    export OsqpEigen_DIR=/opt/osqp-eigen
 
 %runscript
   CMD="${@}"

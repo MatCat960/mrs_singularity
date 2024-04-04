@@ -140,6 +140,7 @@ fi
 [ -z "$ROS_MASTER_URI" ] && export ROS_MASTER_URI=http://localhost:$ROS_PORT
 
 export ROS_WORKSPACES="$ROS_WORKSPACES ~/user_ros_workspace"
+export ROS_HOSTNAME=127.0.0.1
 
 # if host pc is not Ubuntu 20.04
 OS_INFO=$(cat /proc/version)
