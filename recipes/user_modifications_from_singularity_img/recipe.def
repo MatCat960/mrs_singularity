@@ -45,6 +45,17 @@ From: ../../images/mrs_uav_system.sif
     cmake -G "Unix Makefiles" ..
     cmake --build . --target install
 
+    # Install required ROS packages
+    mkdir ~/git/
+    cd ~/git/
+    git clone https://github.com/MatCat960/vision_control.git
+    git clone https://github.com/MatCat960/particle_filter.git
+    git clone git@github.com:MatCat960/hqp.git
+    git clone https://github.com/MatCat960/pf_coverage.git
+
+    cd ~/git/particle_filter && git checkout mrs_singularity
+    cd ~/git/pf_coverage && git checkout mrs_singularity
+
     # Remove git credentials
     rm -f ~/.ssh/id_rsa
 
